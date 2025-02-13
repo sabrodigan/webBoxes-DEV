@@ -32,7 +32,7 @@ func InitDatabase() (*mongo.Client, error) {
 
 }
 func GetDatabaseCollection(dbName *string, collectionName string) (*mongo.Collection, error) {
-	if *dbName == "" || dbName == nil {
+	if *dbName == "" {
 		*dbName = DEFAULTDBNAME
 	}
 
