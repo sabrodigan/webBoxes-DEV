@@ -10,9 +10,10 @@ import (
 var env Conf1gDto
 
 type Conf1gDto struct {
-	port        string
-	secretKey   string
-	databaseURL string
+	port         string
+	secretKey    string
+	databaseURL  string
+	databaseName string
 }
 
 func init() {
@@ -24,9 +25,10 @@ func init() {
 
 func Conf1gEnv() {
 	env = Conf1gDto{
-		port:        os.Getenv("PORT"),
-		secretKey:   os.Getenv("SECRET_KEY"),
-		databaseURL: os.Getenv("MONGODB_URI"),
+		port:         os.Getenv("PORT"),
+		secretKey:    os.Getenv("SECRET_KEY"),
+		databaseURL:  os.Getenv("MONGODB_URI"),
+		databaseName: os.Getenv("DATABASE_NAME"),
 	}
 }
 
