@@ -18,11 +18,7 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 	var dto model.UserCreateDto
 
 	if err := ctx.ShouldBindJSON(&dto); err != nil {
-		ctx.JSON(400, gin.H{
-			"message":    "Invalid request",
-			"statusCode": 400,
-			"error":      err.Error(),
-		})
+
 		ctx.Error(fmt.Errorf("400::%s::%s::%v", "Invalid request", err.Error(), err))
 		return
 	}
