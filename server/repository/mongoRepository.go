@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"github.com/sabrodigan/webboxes/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -11,7 +12,8 @@ import (
 )
 
 type IMongoRepository interface {
-	ReadOne(id string, ctx mongo.SessionContext) (interface{}, error)
+	FindOne(id string, ctx mongo.SessionContext) (interface{}, error)
+	FindOneByKey(key string, value interface{}, ctx mongo.SessionContext) (interface{}, error)
 	Update(id string, data interface{}, ctx mongo.SessionContext) (interface{}, error)
 	Create(data interface{}, ctx mongo.SessionContext) (interface{}, error)
 	Delete(id string, ctx mongo.SessionContext) (interface{}, error)
@@ -32,7 +34,7 @@ func getSessionContext(sessionContext mongo.SessionContext) mongo.SessionContext
 	return sessionContext
 }
 
-func (mr *MongoRepository) ReadOne(id string, ctx mongo.SessionContext) (interface{}, error) {
+func (mr *MongoRepository) FindOne(id string, ctx mongo.SessionContext) (interface{}, error) {
 	sessionContext := getSessionContext(ctx)
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -82,7 +84,12 @@ func (mr *MongoRepository) FindAll(filter interface{}, ctx mongo.SessionContext)
 		log.Fatalf("Error updating document: %v", err)
 		return nil, err
 	}
-	defer cursor.Close(sessionContext)
+	defer func(cursor *mongo.Cursor, ctx context.Context) {
+		err := cursor.Close(ctx)
+		if err != nil {
+			log.Fatalf("Error closing cursor: %v", err)
+		}
+	}(cursor, sessionContext)
 
 	var results []map[string]interface{}
 
@@ -94,8 +101,26 @@ func (mr *MongoRepository) FindAll(filter interface{}, ctx mongo.SessionContext)
 		}
 		results = append(results, document)
 	}
-
 	return results, cursor.Err()
+}
+
+func (mr *MongoRepository) FindOneByKey(key string, value interface{}, ctx mongo.SessionContext) (interface{}, error) {
+	sessionContext := getSessionContext(ctx)
+
+	actualValue, err := primitive.ObjectIDFromHex(value.(string))
+	var result *mongo.SingleResult
+	if err != nil {
+		fmt.Printf("%s is not an object id\n", key)
+		result = mr.collection.FindOne(sessionContext, bson.M{key: actualValue})
+	} else {
+		result = mr.collection.FindOne(sessionContext, bson.M{key: value})
+	}
+	var document map[string]interface{}
+	if err := result.Decode(&document); err != nil {
+		return nil, err
+	}
+
+	return document, nil
 }
 
 func (mr *MongoRepository) Aggregate(pipelines mongo.Pipeline, ctx mongo.SessionContext) ([]map[string]interface{}, error) {
@@ -105,7 +130,12 @@ func (mr *MongoRepository) Aggregate(pipelines mongo.Pipeline, ctx mongo.Session
 		log.Fatalf("Error updating document: %v", err)
 		return nil, err
 	}
-	defer cursor.Close(sessionContext)
+	defer func(cursor *mongo.Cursor, ctx context.Context) {
+		err := cursor.Close(ctx)
+		if err != nil {
+			log.Fatalf("Error closing cursor: %v", err)
+		}
+	}(cursor, sessionContext)
 
 	var results []map[string]interface{}
 

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sabrodigan/webboxes/model"
 	"github.com/sabrodigan/webboxes/service"
@@ -22,9 +23,11 @@ func (uc *UserController) CreateUser(ctx *gin.Context) {
 			"statusCode": 400,
 			"error":      err.Error(),
 		})
+		ctx.Error(fmt.Errorf("400::%s::%s::%v", "Invalid request", err.Error(), err))
 		return
 	}
 	data, err := uc.userService.CreateUser(dto, nil)
+
 	if err != nil {
 		ctx.Error(err)
 		return

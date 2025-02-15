@@ -8,12 +8,12 @@ import (
 	"github.com/sabrodigan/webboxes/utils"
 )
 
-func RegisterUserRoutes(router *gin.RouterGroup) {
+func RegisterAuthRoutes(router *gin.RouterGroup) {
 	repository := repo.GetRepository()
-	userService := service.GetUserService(*repository)
-	authService := service.GetAuthService(*repository, userService)
+	userService := service.GetUserService(*repository)              // Ensure correct arguments
+	authService := service.GetAuthService(*repository, userService) // Ensure correct arguments
 	responseService := utils.GetResponseService()
-	authController := controller.GetAuthController(authService, *responseService)
+	authController := controller.GetAuthController(authService, *responseService) // Ensure correct type
 
 	router.POST(
 		"/login",

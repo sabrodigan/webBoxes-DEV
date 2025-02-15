@@ -23,7 +23,7 @@ func GetRepository() *Repository {
 	if err != nil {
 		log.Fatalf("Error fetching users collection: %v", err)
 	}
-	// Pass the dbName to the GetMongoRepository function
+	// Pass the dbName and collection to the GetMongoRepository function
 	return &Repository{
 		UserRepository: GetMongoRepository(dbName, users),
 	}

@@ -6,7 +6,7 @@ type User struct {
 	Id       primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
 	Name     string             `bson:"name, omitempty" json:"name"`
 	Email    string             `bson:"email,omitempty" json:"email"`
-	Password primitive.ObjectID `bson:"password" json:"password"`
+	Password string             `bson:"password" json:"password"`
 }
 
 type UserCreateDto struct {
