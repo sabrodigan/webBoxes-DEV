@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/sabrodigan/webboxes/config"
+	"github.com/sabrodigan/webboxes/routes"
 )
 
 func main() {
@@ -26,7 +27,8 @@ func main() {
 			"statusCode": 200,
 		})
 	})
-
+	routes.RegisterRoutes(app)
+	
 	fmt.Println("Our application is now running!")
 
 	port, err := config.GetEnvProperty("port")
